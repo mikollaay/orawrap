@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  * NAME
- *   database.js
+ *   index.js
  *
  * DESCRIPTION
  *   A wrapper module for node-oracledb.
@@ -179,8 +179,14 @@ module.exports.releaseConnection = releaseConnection;
 
 function simpleExecute(sql, bindParams, options) {
 
-    if (options.isAutoCommit === undefined) {
-        options.isAutoCommit = true;
+    if (oracledb.version >= 500) {
+        if (options.autoCommit === undefined) { //isAutoCommit was renamed to autoCommit in node-oracledb v0.5.0
+            options.autoCommit = true;
+        }
+    } else {
+        if (options.isAutoCommit === undefined) { //isAutoCommit was left for backward compatibility, should probably remove in future
+            options.isAutoCommit = true;
+        }
     }
 
     return new Promise(function(resolve, reject) {
